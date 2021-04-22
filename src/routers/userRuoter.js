@@ -30,7 +30,7 @@ userRouter.post("/signin", async (req, res) => {
   try {
     const user = await User.findOne({ email, password });
     if (!user) {
-      return res.status(401).send("Incorrect email or password");
+      return res.status(401).send({ message: "Incorrect email or password" });
     }
     const token = await user.generateAuthToken();
     res.status(200).send({
