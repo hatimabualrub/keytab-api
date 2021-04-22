@@ -15,7 +15,11 @@ userRouter.post("/signup", async (req, res) => {
     }
     await user.save();
     const token = await user.generateAuthToken();
-    res.status(201).send({ token });
+    res.status(201).send({
+      name: user.name,
+      gradeLevel: user.gradeLevel,
+      token,
+    });
   } catch (e) {
     res.status(500).send({ message: "Internal server error" });
   }
@@ -29,7 +33,11 @@ userRouter.post("/signin", async (req, res) => {
       return res.status(401).send("Incorrect email or password");
     }
     const token = await user.generateAuthToken();
-    res.status(200).send({ token });
+    res.status(200).send({
+      name: user.name,
+      gradeLevel: user.gradeLevel,
+      token,
+    });
   } catch (e) {
     res.status(500).send({ message: "Internal server error" });
   }
