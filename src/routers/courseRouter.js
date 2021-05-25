@@ -1,6 +1,7 @@
 const express = require("express");
 
 const Course = require("../models/Course");
+const User = require("../models/User");
 const Enrollment = require("../models/Enrollment");
 const auth = require("../middlewares/auth");
 
@@ -24,6 +25,8 @@ courseRouter.get("/view/all", async (req, res) => {
       .skip(parseInt(req.query.skip));
 
     const response = await courses.map(async (course) => {
+      const instructor = await User.findById(course.creator);
+      course.instructor = instructor.name;
       const enrollments = await course.calculateRate();
       return {
         course,
