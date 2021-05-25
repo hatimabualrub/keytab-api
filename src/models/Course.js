@@ -13,6 +13,10 @@ const courseSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    longDescription: {
+      type: String,
+      trim: true,
+    },
     gradeLevel: {
       type: Number /* [(1 - 12) , (0 => for non-students)] */,
       default: 0,
