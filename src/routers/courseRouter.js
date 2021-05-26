@@ -62,15 +62,19 @@ courseRouter.get("/view/enrolled", auth, async (req, res) => {
 });
 
 courseRouter.get("/view/:id", auth, async (req, res) => {
+  const user = req.user;
   try {
     const course = await Course.findById(req.params.id);
     if (!course) {
       return res.status(404).send({ message: "Course not found" });
     }
     const enrollments = await course.calculateRate();
+    const isUserEnrolled = await Enrollment.isEnrolled(user._id, course._id);
+    const isUserCreator = user._id.equals(course.creator);
+    const userState = { isUserEnrolled, isUserCreator };
 
     await course.populate("creator").execPopulate();
-    res.send({ course, enrollments });
+    res.send({ course, enrollments, userState });
   } catch (e) {
     res.status(500).send({ message: "Internal server error" });
   }
