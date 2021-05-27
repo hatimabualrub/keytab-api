@@ -48,10 +48,32 @@ courseRouter.get("/view/enrolled", auth, async (req, res) => {
     await Enrollment.populate(enrollments, "course");
     const response = await enrollments.map(async (enrollment) => {
       const { course } = enrollment;
+      const instructor = await User.findById(course.creator);
+      course.instructor = instructor.name;
       const rate = await course.calculateRate();
       return {
         course,
         enrollments: rate,
+        instructor: instructor.name,
+      };
+    });
+
+    Promise.all(response).then((data) => res.send(data));
+  } catch (e) {
+    res.status(500).send({ message: "Internal server error" });
+  }
+});
+
+courseRouter.get("/view/created", auth, async (req, res) => {
+  const user = req.user;
+  try {
+    const courses = await Course.find({ creator: user._id });
+    const response = await courses.map(async (course) => {
+      const rate = await course.calculateRate();
+      return {
+        course,
+        enrollments: rate,
+        instructor: user.name,
       };
     });
 
