@@ -10,6 +10,13 @@ const lessonRouter = new express.Router();
 lessonRouter.get("/view/:id", auth, async (req, res) => {
   try {
     const lesson = await Lesson.findById(req.params.id);
+    const lessonsList = await Lesson.find({ course: lesson.course });
+    const nextLesson =
+      lesson.order === lessonsList.length ? null : lessonsList[lesson.order];
+
+    const previousLesson =
+      lesson.order === 1 ? null : lessonsList[lesson.order - 2];
+
     if (!lesson) {
       return res.status(404).send({ message: "Lesson not found" });
     }
@@ -18,7 +25,7 @@ lessonRouter.get("/view/:id", auth, async (req, res) => {
     if (!isEnrolled && !req.user._id.equals(course.creator)) {
       return res.status(409).send({ message: "User not enrolled" });
     }
-    res.send(lesson);
+    res.send({ lesson, lessonNav: { nextLesson, previousLesson } });
   } catch (e) {
     res.status(500).send({ message: "Internal server error" });
   }
