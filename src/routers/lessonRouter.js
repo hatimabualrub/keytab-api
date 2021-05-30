@@ -55,9 +55,13 @@ lessonRouter.post("/create", auth, async (req, res) => {
     if (!course.creator.equals(req.user._id)) {
       return res.status(401).send({ message: "Unauthorized user" });
     }
+
+    const lessonsList = await Lesson.find({ course: req.body.course });
+    req.body.order = lessonsList.length + 1;
+
     const lesson = new Lesson(req.body);
     await lesson.save();
-    res.status(201).send();
+    res.status(201).send({ lessonId: lesson._id });
   } catch (e) {
     res.status(500).send({ message: "Internal server error" });
   }
