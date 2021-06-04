@@ -11,7 +11,8 @@ courseRouter.get("/view/all", async (req, res) => {
   const match = {};
   const sort = {};
   if (req.query.title) {
-    match.title = req.query.title;
+    // match.title = req.query.title;
+    match.title = { $regex: req.query.title, $options: "i" };
   }
   if (req.query.subject) {
     match.subject = req.query.subject;
